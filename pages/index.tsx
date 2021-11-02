@@ -1,5 +1,5 @@
 import { withRedux } from '../client/middlewares/redux';
-import { withAuth } from '../client/middlewares/auth'; 
+import { withAuth } from '../client/middlewares/auth';
 import useSWR from 'swr';
 import { fetcher } from '../client/util';
 
@@ -7,7 +7,7 @@ import ApplicationsTable from '../client/components/ApplicationsTable';
 import Layout from '../client/components/Layout';
 
 export default withRedux(withAuth(function() {
-  const { data, error, isValidating, revalidate } = useSWR('/api/apps', fetcher, { refreshInterval: 8000 });
+  const { data, error, isValidating, revalidate } = useSWR('/api/apps', fetcher, { refreshInterval: 5000 });
   const canUpdate = !isValidating && (data || error);
 
   return (
@@ -15,9 +15,9 @@ export default withRedux(withAuth(function() {
       <div className="container panel is-info">
         <div className="panel-heading">
           Applications
-          <a 
-            className={`button button-primary is-pulled-right is-light is-outlined ${canUpdate ? '' : 'is-loading'}`} 
-            style={{ marginTop: '-6px' }} 
+          <a
+            className={`button button-primary is-pulled-right is-light is-outlined ${canUpdate ? '' : 'is-loading'}`}
+            style={{ marginTop: '-6px' }}
             onClick={() => canUpdate && revalidate()}>
             Update
           </a>

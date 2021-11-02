@@ -2,7 +2,7 @@ import { IApiRequest, IApiResponse } from '../../server/api';
 import { database, session, method, combine } from '../../server/middlewares';
 
 const logout = async (req: IApiRequest, res: IApiResponse) => {
-  delete req.session.userId;
+  delete req.session.username;
   res.status(200).json({});
 };
 

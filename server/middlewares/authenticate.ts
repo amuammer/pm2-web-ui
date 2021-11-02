@@ -1,22 +1,27 @@
 import { IApiRequest, IApiResponse } from '../api';
 import { UserModel, User } from '../models/user';
 
-interface IAuthOptions {
-  required?: boolean;
-};
-
-export default (options: IAuthOptions = {}) => (fn) => {
+export default () => (fn) => {
   return async (req: IApiRequest, res: IApiResponse) => {
-    if (!req.session.userId) {
+
+    console.log("authenticate middleware");
+
+
+    if (!req.session.username) {
       req.user = null;
 
-      if (options.required) {
-        res.status(403).send('');
-        return;
-      }
+      res.status(403).send('');
+      return;
     }
 
-    req.user = await UserModel.findOne({ _id: req.session.userId }) as User;
+    const [userData] = await UserModel.findByUsername(req.session.username);
+
+    if (!userData) return res.status(403).send('');
+
+    req.user = new User(userData).getPublicData() as User;
+
+    console.log("authenticate -> user", req.user);
+
 
     return await fn(req, res);
   };

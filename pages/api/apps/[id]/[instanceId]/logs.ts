@@ -20,4 +20,4 @@ const onRequest = async (req: IApiRequest, res: IApiResponse) => {
   res.status(200).json({ output, error });
 };
 
-export default combine(method('GET'), database, session, authenticate({ required: true }), onRequest);
+export default combine(method('GET'), database, session, authenticate(), onRequest);

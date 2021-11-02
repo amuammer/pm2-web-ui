@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import useSWR from 'swr';
 import { fetcher } from '../../client/util';
 import { withRedux } from '../../client/middlewares/redux';
-import { withAuth } from '../../client/middlewares/auth'; 
+import { withAuth } from '../../client/middlewares/auth';
 import axios from 'axios';
 
 import Layout from '../../client/components/Layout';
@@ -28,7 +28,7 @@ export default withRedux(withAuth(function() {
   const [warning, setWarning] = useState(null);
   const router = useRouter();
   const { id } = router.query;
-  const { data, error, isValidating, revalidate } = useSWR(`/api/apps/${id}`, fetcher, { refreshInterval: 3000 });
+  const { data, error, isValidating, revalidate } = useSWR(`/api/apps/${id}`, fetcher, { refreshInterval: 5000 });
   const canUpdate = !isValidating && (data || error);
 
   if (!data || error) {
@@ -36,7 +36,7 @@ export default withRedux(withAuth(function() {
       <Layout>
         <Panel title={id} canUpdate={canUpdate} onUpdate={() => revalidate()}>
           {
-            error 
+            error
             ? <ErrorDisplay style={{ width: '100%' }} title={error.response?.statusText ?? 'Error'} text={error.response?.data?.message ?? error.toString()} />
             : <progress className="progress is-small is-info" max="100">Loading...</progress>
           }
@@ -44,6 +44,7 @@ export default withRedux(withAuth(function() {
       </Layout>
     );
   }
+
 
   const appRights = client.apps.find(a => a.id === id)?.right ?? 0;
   const canManage = client.isAdmin || (appRights & UserAppRight.MANAGE) === UserAppRight.MANAGE;
@@ -64,14 +65,14 @@ export default withRedux(withAuth(function() {
 
     try { await axios.post(`/api/apps/${name}`, { action }); }
     catch (err) {
-      if (isMounted) { 
-        setWarning([err.response?.statusText ?? 'Error', err.response?.data?.message ?? err.toString()]); 
+      if (isMounted) {
+        setWarning([err.response?.statusText ?? 'Error', err.response?.data?.message ?? err.toString()]);
       }
     }
-    
-    if (isMounted) { 
+
+    if (isMounted) {
       await revalidate();
-      setWaiting(false); 
+      setWaiting(false);
     }
   };
 
@@ -80,9 +81,9 @@ export default withRedux(withAuth(function() {
       <div className="container panel is-info">
         <div className="panel-heading">
           {id}{isCluster && <ClusterIcon pull={null} />}
-          <a 
-            className={`button button-primary is-pulled-right is-light is-outlined ${canUpdate ? '' : 'is-loading'}`} 
-            style={{ marginTop: '-6px' }} 
+          <a
+            className={`button button-primary is-pulled-right is-light is-outlined ${canUpdate ? '' : 'is-loading'}`}
+            style={{ marginTop: '-6px' }}
             onClick={() => revalidate()}>
             Update
           </a>
