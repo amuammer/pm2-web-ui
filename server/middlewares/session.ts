@@ -1,11 +1,13 @@
 import session, { withSession } from 'next-session';
-import * as mongoose from 'mongoose';
-import connectMongo from 'connect-mongo';
+import connectKnex from 'connect-session-knex';
 
-const MongoStore = connectMongo(session);
+import knex from "../database";
+
+const KnexSessionStore = connectKnex(session);
 
 let store;
-export default (fn) => withSession(fn, { 
-  storePromisify: true, 
-  store: store ? store : (store = new MongoStore({ mongooseConnection: mongoose.connection })),
+
+export default (fn) => withSession(fn, {
+  storePromisify: true,
+  store: store ? store : (store = new KnexSessionStore({ knex, tablename: "PM2_SESSIONS" })),
 });

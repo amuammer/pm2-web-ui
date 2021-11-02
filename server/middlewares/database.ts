@@ -6,12 +6,6 @@ import config from '../config';
 
 export default (fn) => {
   return async (req: IApiRequest, res: IApiResponse) => {
-    if (mongoose.connection?.readyState != 1) {
-      await mongoose.connect(config.mongodbUri, { useNewUrlParser: true, useUnifiedTopology: true });
-      UserModel.updateOne({ username: 'root' }, { $set: { isAdmin: true, hashedPassword: User.hash(config.salt) } }, { upsert: true })
-        .catch((err) => console.error(`Failed to update the root user: ${err}`));
-    }
-
     return await fn(req, res);
   };
 };

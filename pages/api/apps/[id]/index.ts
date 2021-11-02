@@ -51,4 +51,4 @@ const onPost = async (req: IApiRequest, res: IApiResponse) => {
 
 const onRequest = (req: IApiRequest, res: IApiResponse) => req.method === 'GET' ? onGet(req, res) : onPost(req, res);
 
-export default combine(method('GET', 'POST'), database, session, authenticate({ required: true }), pm2, onRequest);
+export default combine(method('GET', 'POST'), database, session, authenticate(), pm2, onRequest);

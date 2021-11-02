@@ -6,17 +6,29 @@ import * as validate from '../../shared/validation';
 const login = async (req: IApiRequest, res: IApiResponse) => {
   const { username, password } = req.body;
 
-  if (!validate.all(validate.username(username), validate.password(password))) {
-    throw new RequestError('Invalid username or password.', 400);
+  const [userData] = await UserModel.findByUsername(username);
+
+  console.log("userData",userData);
+
+  if (!userData) {
+    throw new RequestError('user notfound!', 400);
   }
 
-  const user = await UserModel.findOne({ username, hashedPassword: User.hash(password) }) as User;
+  const hash = userData.PASSWORD;
 
-  if (!user) {
-    throw new RequestError('User with given username and password was not found.', 403);
+  if (!hash) {
+    throw new RequestError('user has an empty password!', 400);
   }
 
-  req.session.userId = (user as any)._id;
+  const isValidPassword = await User.isValidPassword(password, hash);
+
+  if (!isValidPassword) {
+    throw new RequestError('password incorrect!', 400);
+  }
+
+  const user = new User(userData);
+
+  req.session.username = (user).username;
   res.status(200).json(user.getPublicData());
 };
 

@@ -8,9 +8,17 @@ export enum UserAppRight {
 
 export interface IUser {
   username: string;
-  isAdmin?: boolean;
+  password: string;
+  isAdmin: boolean;
+  hasRight?: boolean;
+  getPublicData?: any;
   apps: IAppOwnership[];
 };
+
+export interface IUserModel {
+  findByUsername? : any;
+};
+
 
 export interface IAppOwnership {
   id: string;
